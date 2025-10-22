@@ -713,8 +713,7 @@ const MentorshipPlatform = () => {
                       <div className="md:col-span-2"><strong>LinkedIn:</strong> <a href={mentor.linked_in} target="_blank" rel="noopener noreferrer" className="underline">{mentor.linked_in}</a></div>
                       <div className="md:col-span-2"><strong>Skills:</strong> {mentor.skills}</div>
                       <div className="md:col-span-2"><strong>Availability:</strong> {mentor.availability}</div>
-                      {mentor.courses &&{mentor.courses && <div className="md:col-span-2"><strong>Certifications:</strong> {mentor.courses}</div>}
-                    </div>
+                     {mentor.courses && <div className="md:col-span-2"><strong>Certifications:</strong> {mentor.courses}</div>}
 
                     <div className="flex gap-4">
                       <button
