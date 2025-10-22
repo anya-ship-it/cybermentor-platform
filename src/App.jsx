@@ -346,7 +346,7 @@ const MentorshipPlatform = () => {
             <input 
               type="text" 
               value={mentorForm.fullName}
-              onChange={(e) => setMentorForm(prev => ({...prev, fullName: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, fullName: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -356,7 +356,7 @@ const MentorshipPlatform = () => {
             <input 
               type="email" 
               value={mentorForm.email}
-              onChange={(e) => setMentorForm(prev => ({...prev, email: e.target.value}))}
+             onInput={(e) => setMentorForm(prev => ({...prev, fullName: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -366,7 +366,7 @@ const MentorshipPlatform = () => {
             <input 
               type="url" 
               value={mentorForm.linkedIn}
-              onChange={(e) => setMentorForm(prev => ({...prev, linkedIn: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, linkedIn: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="https://linkedin.com/in/yourprofile" 
             />
@@ -377,7 +377,7 @@ const MentorshipPlatform = () => {
             <input 
               type="text" 
               value={mentorForm.country}
-              onChange={(e) => setMentorForm(prev => ({...prev, country: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, country: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -387,7 +387,7 @@ const MentorshipPlatform = () => {
             <input 
               type="text" 
               value={mentorForm.languages}
-              onChange={(e) => setMentorForm(prev => ({...prev, languages: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, languages: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., English, Arabic, French" 
             />
@@ -397,7 +397,7 @@ const MentorshipPlatform = () => {
             <label className="block font-bold mb-2 text-black">Skills & Expertise *</label>
             <textarea 
               value={mentorForm.skills}
-              onChange={(e) => setMentorForm(prev => ({...prev, skills: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, skills: e.target.value}))}
               rows="3"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., Penetration Testing, Network Security, Incident Response" 
@@ -408,7 +408,7 @@ const MentorshipPlatform = () => {
             <label className="block font-bold mb-2 text-black">Availability *</label>
             <textarea 
               value={mentorForm.availability}
-              onChange={(e) => setMentorForm(prev => ({...prev, availability: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, availability: e.target.value}))}
               rows="2"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., Weekends, 2 hours per week" 
@@ -419,7 +419,7 @@ const MentorshipPlatform = () => {
             <label className="block font-bold mb-2 text-black">Courses/Certifications (optional)</label>
             <textarea 
               value={mentorForm.courses}
-              onChange={(e) => setMentorForm(prev => ({...prev, courses: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, courses: e.target.value}))}
               rows="3"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., CISSP, CEH, OSCP" 
@@ -431,7 +431,7 @@ const MentorshipPlatform = () => {
             <input 
               type="text" 
               value={mentorForm.experience}
-              onChange={(e) => setMentorForm(prev => ({...prev, experience: e.target.value}))}
+              onInput={(e) => setMentorForm(prev => ({...prev, experience: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -713,7 +713,8 @@ const MentorshipPlatform = () => {
                       <div className="md:col-span-2"><strong>LinkedIn:</strong> <a href={mentor.linked_in} target="_blank" rel="noopener noreferrer" className="underline">{mentor.linked_in}</a></div>
                       <div className="md:col-span-2"><strong>Skills:</strong> {mentor.skills}</div>
                       <div className="md:col-span-2"><strong>Availability:</strong> {mentor.availability}</div>
-                     {mentor.courses && <div className="md:col-span-2"><strong>Certifications:</strong> {mentor.courses}</div>}
+                      {mentor.courses && <div className="md:col-span-2"><strong>Certifications:</strong> {mentor.courses}</div>}
+                    </div>
 
                     <div className="flex gap-4">
                       <button
