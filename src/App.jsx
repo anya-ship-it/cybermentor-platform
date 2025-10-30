@@ -33,14 +33,15 @@ const MentorshipPlatform = () => {
     }
   }, [isAdmin]);
 
-  const loadMentors = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('mentors')
-        .select('*')
-        .eq('status', 'approved')
-        .order('registered_at', { ascending: false });
+const loadMentors = async () => {
+  setLoading(true);
+  try {
+    const { data, error } = await supabase
+      .from('mentors')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('active', true)
+      .order('registered_at', { ascending: false });
 
       if (error) throw error;
       setMentors(data || []);
@@ -333,7 +334,78 @@ const MentorshipPlatform = () => {
     </div>
   );
 
-  const MentorRegisterPage = () => (
+ const MentorRegisterPage = () => {
+  const fullNameRef = React.useRef();
+  const emailRef = React.useRef();
+  const linkedInRef = React.useRef();
+  const countryRef = React.useRef();
+  const languagesRef = React.useRef();
+  const skillsRef = React.useRef();
+  const availabilityRef = React.useRef();
+  const coursesRef = React.useRef();
+  const experienceRef = React.useRef();
+
+  const handleSubmit = async () => {
+    const data = {
+      fullName: fullNameRef.current.value,
+      email: emailRef.current.value,
+      linkedIn: linkedInRef.current.value,
+      country: countryRef.current.value,
+      languages: languagesRef.current.value,
+      skills: skillsRef.current.value,
+      availability: availabilityRef.current.value,
+      courses: coursesRef.current.value,
+      experience: experienceRef.current.value
+    };
+
+    if (!data.fullName || !data.email || !data.linkedIn || 
+        !data.country || !data.languages || !data.skills || 
+        !data.availability || !data.experience) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('mentors')
+        .insert([{
+          full_name: data.fullName,
+          email: data.email,
+          linked_in: data.linkedIn,
+          country: data.country,
+          languages: data.languages,
+          skills: data.skills,
+          availability: data.availability,
+          courses: data.courses,
+          experience: data.experience,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
+
+      alert('Registration submitted! Your profile will be reviewed by an administrator.');
+      
+      fullNameRef.current.value = '';
+      emailRef.current.value = '';
+      linkedInRef.current.value = '';
+      countryRef.current.value = '';
+      languagesRef.current.value = '';
+      skillsRef.current.value = '';
+      availabilityRef.current.value = '';
+      coursesRef.current.value = '';
+      experienceRef.current.value = '';
+      
+      setCurrentPage('home');
+    } catch (error) {
+      console.error('Error registering mentor:', error);
+      alert('Error submitting registration. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
     <div className="min-h-screen bg-white py-12">
       <div className="max-w-3xl mx-auto px-4">
         <button onClick={() => setCurrentPage('home')} className="mb-6 text-black hover:underline">
@@ -344,9 +416,8 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Full Name *</label>
             <input 
+              ref={fullNameRef}
               type="text" 
-              value={mentorForm.fullName}
-              onInput={(e) => setMentorForm(prev => ({...prev, fullName: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -354,9 +425,8 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Email *</label>
             <input 
+              ref={emailRef}
               type="email" 
-              value={mentorForm.email}
-             onInput={(e) => setMentorForm(prev => ({...prev, fullName: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -364,9 +434,8 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">LinkedIn Profile *</label>
             <input 
+              ref={linkedInRef}
               type="url" 
-              value={mentorForm.linkedIn}
-              onInput={(e) => setMentorForm(prev => ({...prev, linkedIn: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="https://linkedin.com/in/yourprofile" 
             />
@@ -375,9 +444,8 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Country *</label>
             <input 
+              ref={countryRef}
               type="text" 
-              value={mentorForm.country}
-              onInput={(e) => setMentorForm(prev => ({...prev, country: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
@@ -385,9 +453,8 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Languages Spoken *</label>
             <input 
+              ref={languagesRef}
               type="text" 
-              value={mentorForm.languages}
-              onInput={(e) => setMentorForm(prev => ({...prev, languages: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., English, Arabic, French" 
             />
@@ -396,8 +463,7 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Skills & Expertise *</label>
             <textarea 
-              value={mentorForm.skills}
-              onInput={(e) => setMentorForm(prev => ({...prev, skills: e.target.value}))}
+              ref={skillsRef}
               rows="3"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., Penetration Testing, Network Security, Incident Response" 
@@ -407,8 +473,7 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Availability *</label>
             <textarea 
-              value={mentorForm.availability}
-              onInput={(e) => setMentorForm(prev => ({...prev, availability: e.target.value}))}
+              ref={availabilityRef}
               rows="2"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., Weekends, 2 hours per week" 
@@ -418,8 +483,7 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Courses/Certifications (optional)</label>
             <textarea 
-              value={mentorForm.courses}
-              onInput={(e) => setMentorForm(prev => ({...prev, courses: e.target.value}))}
+              ref={coursesRef}
               rows="3"
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               placeholder="e.g., CISSP, CEH, OSCP" 
@@ -429,15 +493,14 @@ const MentorshipPlatform = () => {
           <div>
             <label className="block font-bold mb-2 text-black">Years of Experience *</label>
             <input 
+              ref={experienceRef}
               type="text" 
-              value={mentorForm.experience}
-              onInput={(e) => setMentorForm(prev => ({...prev, experience: e.target.value}))}
               className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
             />
           </div>
 
           <button 
-            onClick={handleMentorRegistration}
+            onClick={handleSubmit}
             disabled={loading}
             className="w-full bg-black text-white py-4 text-lg font-bold hover:bg-gray-800 transition-all disabled:bg-gray-400">
             {loading ? 'Submitting...' : 'Submit Registration'}
@@ -446,6 +509,7 @@ const MentorshipPlatform = () => {
       </div>
     </div>
   );
+};
 
   const DirectoryPage = () => (
     <div className="min-h-screen bg-white py-12">
@@ -468,9 +532,12 @@ const MentorshipPlatform = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {mentors.map(mentor => (
               <div key={mentor.id} className="border-2 border-black p-6 hover:bg-gray-50 transition-all">
-                <h3 className="text-2xl font-bold mb-3 text-black">{mentor.full_name}</h3>
-                
-                <div className="space-y-2 mb-4">
+                <h3 className="text-2xl font-bold mb-2 text-black">{mentor.full_name}</h3>
+<a href={mentor.linked_in} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-block mb-3">
+  View LinkedIn Profile →
+</a>
+
+<div className="space-y-2 mb-4">
                   <div className="flex items-start">
                     <Globe className="w-5 h-5 mr-2 mt-1 flex-shrink-0" />
                     <span><strong>Country:</strong> {mentor.country}</span>
@@ -520,7 +587,112 @@ const MentorshipPlatform = () => {
     </div>
   );
 
-  const ConnectionFormModal = () => (
+const ConnectionFormModal = () => {
+  const nameRef = React.useRef();
+  const emailRef = React.useRef();
+  const availabilityRef = React.useRef();
+  const messageRef = React.useRef();
+  const honeypotRef = React.useRef();
+
+  const handleSubmit = async () => {
+    const data = {
+      menteeName: nameRef.current.value,
+      menteeEmail: emailRef.current.value,
+      menteeAvailability: availabilityRef.current.value,
+      message: messageRef.current.value,
+      honeypot: honeypotRef.current.value
+    };
+
+    if (!data.menteeName || !data.menteeEmail || !data.menteeAvailability || !data.message) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    if (data.honeypot) {
+      console.log('Spam detected');
+      return;
+    }
+
+    if (data.message.length < 120) {
+      alert('Please provide at least 120 characters explaining what you want to get out of this mentorship.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data: blockedCheck } = await supabase
+        .from('blocked_emails')
+        .select('email')
+        .eq('email', data.menteeEmail.toLowerCase())
+        .single();
+
+      if (blockedCheck) {
+        alert('This email has been blocked from sending requests. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
+      const { data: recentRequests } = await supabase
+        .from('connection_requests')
+        .select('created_at')
+        .eq('mentee_email', data.menteeEmail.toLowerCase())
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+      if (recentRequests && recentRequests.length >= 3) {
+        alert('You have reached the maximum number of requests (3) for today. Please try again tomorrow.');
+        setLoading(false);
+        return;
+      }
+
+      const { error: requestError } = await supabase
+        .from('connection_requests')
+        .insert([{
+          mentor_id: selectedMentor.id,
+          mentee_name: data.menteeName,
+          mentee_email: data.menteeEmail.toLowerCase(),
+          mentee_availability: data.menteeAvailability,
+          message: data.message
+        }]);
+
+      if (requestError) throw requestError;
+
+      await supabase
+        .from('newsletter_subscribers')
+        .upsert([{
+          email: data.menteeEmail.toLowerCase(),
+          name: data.menteeName
+        }], { onConflict: 'email' });
+
+      const emailResponse = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mentorEmail: selectedMentor.email,
+          mentorName: selectedMentor.full_name,
+          menteeName: data.menteeName,
+          menteeEmail: data.menteeEmail,
+          menteeAvailability: data.menteeAvailability,
+          message: data.message
+        })
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send email notification');
+      }
+
+      alert(`Connection request sent to ${selectedMentor.full_name}! They will receive an email with your information.`);
+      
+      setShowConnectionForm(false);
+      setSelectedMentor(null);
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      alert('Error sending request. Please try again or contact the mentor directly at: ' + selectedMentor.email);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto border-4 border-black">
         <div className="p-6">
@@ -531,9 +703,8 @@ const MentorshipPlatform = () => {
           
           <div className="space-y-4">
             <input 
+              ref={honeypotRef}
               type="text" 
-              value={connectionForm.honeypot}
-              onChange={(e) => setConnectionForm(prev => ({...prev, honeypot: e.target.value}))}
               className="hidden"
               tabIndex="-1"
               autoComplete="off"
@@ -542,9 +713,8 @@ const MentorshipPlatform = () => {
             <div>
               <label className="block font-bold mb-2 text-black">Your Full Name *</label>
               <input 
+                ref={nameRef}
                 type="text" 
-                value={connectionForm.menteeName}
-                onChange={(e) => setConnectionForm(prev => ({...prev, menteeName: e.target.value}))}
                 className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               />
             </div>
@@ -552,9 +722,8 @@ const MentorshipPlatform = () => {
             <div>
               <label className="block font-bold mb-2 text-black">Your Email *</label>
               <input 
+                ref={emailRef}
                 type="email" 
-                value={connectionForm.menteeEmail}
-                onChange={(e) => setConnectionForm(prev => ({...prev, menteeEmail: e.target.value}))}
                 className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
               />
             </div>
@@ -562,9 +731,8 @@ const MentorshipPlatform = () => {
             <div>
               <label className="block font-bold mb-2 text-black">Your Availability *</label>
               <input 
+                ref={availabilityRef}
                 type="text" 
-                value={connectionForm.menteeAvailability}
-                onChange={(e) => setConnectionForm(prev => ({...prev, menteeAvailability: e.target.value}))}
                 className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="e.g., Weekdays after 6 PM" 
               />
@@ -575,20 +743,16 @@ const MentorshipPlatform = () => {
                 What do you want to get out of this mentorship? * (minimum 120 characters)
               </label>
               <textarea 
-                value={connectionForm.message}
-                onChange={(e) => setConnectionForm(prev => ({...prev, message: e.target.value}))}
+                ref={messageRef}
                 rows="6"
                 className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black" 
                 placeholder="Please describe your goals, what you hope to learn, and why you're interested in this mentor..." 
               />
-              <div className="text-sm text-gray-600 mt-1">
-                {connectionForm.message.length} / 120 characters
-              </div>
             </div>
 
             <div className="flex gap-4">
               <button 
-                onClick={handleConnectionRequest}
+                onClick={handleSubmit}
                 disabled={loading}
                 className="flex-1 bg-black text-white py-3 font-bold hover:bg-gray-800 transition-all disabled:bg-gray-400">
                 {loading ? 'Sending...' : 'Send Request'}
@@ -597,13 +761,6 @@ const MentorshipPlatform = () => {
                 onClick={() => {
                   setShowConnectionForm(false);
                   setSelectedMentor(null);
-                  setConnectionForm({
-                    menteeName: '',
-                    menteeEmail: '',
-                    menteeAvailability: '',
-                    message: '',
-                    honeypot: ''
-                  });
                 }}
                 className="flex-1 border-2 border-black py-3 font-bold hover:bg-gray-100 transition-all">
                 Cancel
@@ -614,6 +771,7 @@ const MentorshipPlatform = () => {
       </div>
     </div>
   );
+};
 
   const AdminPage = () => {
     const [adminView, setAdminView] = useState('pending');
@@ -636,14 +794,19 @@ const MentorshipPlatform = () => {
                   className="w-full border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
-              <button 
-                onClick={() => {
-                  if (adminPassword === 'admin123') {
-                    setIsAdmin(true);
-                  } else {
-                    alert('Incorrect password');
-                  }
-                }}
+<button 
+  onClick={async () => {
+    if (adminPassword === 'admin123') {
+      setIsAdmin(true);
+      setLoading(true);
+      setTimeout(async () => {
+        await loadAdminData();
+        setLoading(false);
+      }, 100);
+    } else {
+      alert('Incorrect password');
+    }
+  }}
                 className="w-full bg-black text-white py-3 font-bold hover:bg-gray-800 transition-all">
                 Login
               </button>
